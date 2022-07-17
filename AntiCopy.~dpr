@@ -1,0 +1,19 @@
+program AntiCopy;
+
+uses
+  Forms,
+  Main in '..\AntiCopy\Main.pas' {frmMain},
+  Canonization in '..\AntiCopy\Canonization.pas',
+  Values in '..\AntiCopy\Values.pas',
+  ShingleList_creation in '..\AntiCopy\ShingleList_creation.pas',
+  compare_shingles in '..\AntiCopy\compare_shingles.pas',
+  uFrame in '..\AntiCopy\uFrame.pas' {frMain: TFrame},
+  Create_combinations_of_shingle in '..\AntiCopy\Create_combinations_of_shingle.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TfrmMain, frmMain);
+  Application.Run;
+end.

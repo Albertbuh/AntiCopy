@@ -1,0 +1,145 @@
+unit uCreate_combinations;
+
+interface
+uses
+    SysUtils,uValues;
+
+
+    
+         function factorial(a:integer):integer;
+         procedure sort( var a:TWords);
+         procedure DivToWords(s:string; var words:TWords);
+         function output( a:TWords): string;
+         procedure shuffle (var a:TWords; var b:TShingleComb; ind:integer; aHigh:integer; flag:boolean);
+
+implementation
+
+function ElfHash(const Value: string): Integer;
+var
+  i, x: Integer;
+begin
+  Result := 0;
+  for i := 1 to Length(Value) do
+  begin
+    Result := (Result shl 4) + Ord(Value[i]);
+    x := Result and $F0000000;
+    if (x <> 0) then
+      Result := Result xor (x shr 24);
+    Result := Result and (not x);
+  end;
+end;
+
+function factorial(a:integer):integer;
+begin
+    if a > 1 then
+       result:=a*factorial(a-1)
+    else
+        result:=1;
+end;
+
+procedure sort( var a:TWords);
+procedure swap( var a,b:string);
+var
+   temp : string;
+begin
+    temp:=a;
+    a:=b;
+    b:=temp;
+end;
+var i,j,min:integer;
+begin
+    for i:=low(a) to High(a)-1 do
+    begin
+        min:=i;
+        for j:=i to High(a) do
+        begin
+            if a[j] < a[min] then
+               min:=j;
+        end;
+        swap(a[i],a[min]);
+    end;
+end;
+
+procedure DivToWords(s:string; var words:TWords);
+var
+   i,ind:integer;
+begin
+   i:=1;
+   for ind:=1 to ShingleLen do begin words[ind]:=''; end;
+   ind:=1;
+
+   while i<=length(s) do
+   begin
+       if s[i]<>' ' then
+       begin
+          insert(s[i], words[ind], length(words[ind])+1);
+       end
+       else
+           inc(ind);
+       inc(i);
+   end;
+
+end;
+
+function output( a:TWords): string;
+var i:integer;
+begin
+     result:='';
+    for i:=low(a) to high(a) do
+    begin
+        result:=result+a[i]+' ';
+    end;
+    result:=trim(result);
+end;
+
+procedure shuffle (var a:TWords; var b:TShingleComb; ind:integer; aHigh:integer; flag:boolean);  //ind <- num of combination; high<-used in words
+procedure swap( var a,b:string);
+var
+   temp : string;
+begin
+    temp:=a;
+    a:=b;
+    b:=temp;
+end;
+procedure shuf2(var a:TWords; var b:TShingleComb; ind:integer);
+var
+   j,k, l,r:integer;
+begin
+    j:=aHigh - 1;
+    while (j <> -1) and (a[j] >= a[j+1]) do
+    begin
+        j:=j-1;
+    end;
+    if j = -1 then flag:=false
+    else
+    begin
+    k:=aHigh;
+
+    while AnsiCompareStr(a[j],a[k])>=0 do
+    begin
+        k:=k-1;
+    end;
+    swap(a[j], a[k]);
+
+    l:= j+1;
+    r:=aHigh;
+    while l<r do
+    begin
+        swap(a[l],a[r]);
+        inc(l); dec(r);
+    end;
+    end;
+
+    if (flag) and (ind <= high(b)) then
+    begin
+        b[ind].words:=trim(output(a));
+        b[ind].hash:=ElfHash( b[ind].words);
+        shuf2(a, b, ind+1);
+    end;
+end;
+begin
+    b[ind].words:=trim(output(a));
+    b[ind].hash:=ElfHash( b[ind].words);
+    shuf2(a,b,ind+1);
+end;
+end.
